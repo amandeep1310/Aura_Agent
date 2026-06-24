@@ -1,0 +1,31 @@
+# Backend dependencies for AURA AI Campaign Generator
+
+# ── API Framework ─────────────────────────────────────────────────────────────
+fastapi==0.115.6
+uvicorn==0.32.1
+
+# ── LLM ──────────────────────────────────────────────────────────────────────
+# google-generativeai 0.8.x — used for Gemini Flash (text/planning)
+google-generativeai==0.8.3
+# google-genai 2.x — new unified SDK required for gemini-2.5-flash-image
+google-genai==2.9.0
+
+# ── Image Processing & Upload ─────────────────────────────────────────────────
+pillow==11.1.0
+cloudinary==1.42.1
+
+# ── Database ──────────────────────────────────────────────────────────────────
+sqlalchemy==2.0.36
+psycopg2-binary==2.9.10
+alembic==1.14.0             # DB migrations
+
+# ── Config & Environment ──────────────────────────────────────────────────────
+python-dotenv==1.0.1
+pydantic==2.13.4
+pydantic-settings==2.7.0
+
+# ── HTTP Client (for image model APIs) ───────────────────────────────────────
+httpx==0.28.1
+
+# ── Multipart (file uploads) ─────────────────────────────────────────────────
+python-multipart==0.0.20

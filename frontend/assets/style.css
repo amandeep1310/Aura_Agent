@@ -1,0 +1,57 @@
+.stApp {
+    background-color: #ffffff;
+}
+
+/* Main text */
+html,
+body,
+[class*="css"] {
+    color: #0A2E6D;
+}
+
+/* Headers */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: #0057B8 !important;
+    font-weight: 700;
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background-color: #F5F8FF;
+}
+
+/* Buttons */
+.stButton > button {
+    background-color: #0057B8;
+    color: white;
+    border-radius: 10px;
+    border: none;
+}
+
+.stButton > button:hover {
+    background-color: #003E82;
+    color: white;
+}
+
+/* Text Input */
+.stTextInput input {
+    background-color: white;
+    color: #0A2E6D;
+    border: 1px solid #0057B8;
+}
+
+/* Labels */
+label {
+    color: #0057B8 !important;
+    font-weight: 600;
+}
+
+/* Hide Streamlit default pages navigation */
+[data-testid="stSidebarNav"] {
+    display: none !important;
+}
