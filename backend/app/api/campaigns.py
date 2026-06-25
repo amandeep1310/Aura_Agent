@@ -27,23 +27,29 @@ router = APIRouter()
 # ── Background task ────────────────────────────────────────────────────────────
 
 def _run_campaign_plan(campaign_id: uuid.UUID, topic: str, objective: str) -> None:
-    """
-    Called as a FastAPI BackgroundTask after the 202 response is sent.
-    Calls Gemini, persists the 5-day plan as Poster stubs, then marks
-    the campaign as 'ready'. Sets status to 'failed' on any error.
-    """
-    from app.database import SessionLocal  # local import avoids circular refs at module load
+
+    print("BACKGROUND TASK STARTED")
+
+    from app.database import SessionLocal
 
     db: Session = SessionLocal()
+
     try:
+
         campaign = db.get(Campaign, campaign_id)
+
         if not campaign:
-            logger.error("Background task: campaign %s not found", campaign_id)
+            print("CAMPAIGN NOT FOUND")
             return
+
+        print("CALLING GEMINI...")
 
         day_plans = generate_campaign_plan(topic, objective)
 
+        print("GEMINI RETURNED:", len(day_plans), "DAYS")
+
         for plan in day_plans:
+
             poster = Poster(
                 campaign_id=campaign_id,
                 day=plan.day,
@@ -51,25 +57,25 @@ def _run_campaign_plan(campaign_id: uuid.UUID, topic: str, objective: str) -> No
                 theme=plan.theme,
                 image_prompt=plan.image_prompt,
                 text_overlay=plan.text_overlay,
-                status="pending_image",   # Gemini plan done; image not yet generated
+                status="pending_image",
             )
+
             db.add(poster)
 
         campaign.status = CampaignStatus.ready
+
         db.commit()
-        logger.info("Campaign %s plan complete — %d days created", campaign_id, len(day_plans))
+
+        print("CAMPAIGN READY")
 
     except Exception as exc:
+
+        print("ERROR OCCURRED:", exc)
+
         db.rollback()
-        logger.exception("Campaign %s plan failed: %s", campaign_id, exc)
-        try:
-            campaign = db.get(Campaign, campaign_id)
-            if campaign:
-                campaign.status = CampaignStatus.failed
-                db.commit()
-        except Exception:
-            db.rollback()
+
     finally:
+
         db.close()
 
 

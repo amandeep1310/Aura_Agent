@@ -1,4 +1,5 @@
 import streamlit as st
+from services.api import generate_content, get_campaign
 
 st.set_page_config(
     page_title="Agent AURA",
@@ -17,6 +18,8 @@ from components.revision_plan import show_revision_plan
 from utils.session import initialize_session
 from utils.logger import log_info
 
+import time
+
 load_css()
 show_sidebar()
 
@@ -32,35 +35,56 @@ topic = st.text_input(
     "Campaign Topic"
 )
 
-if st.button(
-    "Generate Content"
-):
+objective = st.text_input(
+    "Campaign Objective"
+)
 
-    if topic.strip() == "":
+if st.button("Generate Content"):
+
+    if topic.strip() == "" or objective.strip() == "":
 
         st.warning(
-            "Please enter a topic"
+            "Please enter topic and objective"
         )
 
     else:
 
-        generation_data = {
-            "topic": topic
-        }
+        with st.spinner("Generating Campaign..."):
 
-        st.session_state.generation = generation_data
+            response = generate_content(
+                topic,
+                objective
+            )
 
-        st.session_state.history.append(
-            generation_data
-        )
+if "error" in response:
 
-        log_info(
-            f"Generated Topic: {topic}"
-        )
+    st.error(response["error"])
 
-        st.success(
-            "Generation Completed"
-        )
+else:
+
+    campaign_id = response["campaign_id"]
+
+    time.sleep(5)
+
+    campaign_data = get_campaign(
+        campaign_id
+    )
+
+    st.write(campaign_data)
+
+    st.session_state.generation = campaign_data
+
+    st.session_state.history.append(
+        campaign_data
+    )
+
+    log_info(
+        f"Generated Topic: {topic}"
+    )
+
+    st.success(
+        "Campaign Generated Successfully"
+    )
 
 if st.session_state.generation:
 
